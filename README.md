@@ -1,23 +1,28 @@
-# py-sourceforge-file-hasher
+# py-sourceforge-demo
 
-## 1. Dependencies
-* Windows OS
-* 7-Zip installed in default directory
-* Python3 (developed w/ version 3.10.2, other versions not tested)
-
-## 2. Setup
-* ```pip install -r requirements.txt```
-
-## 2. Purpose of demo
-Purpose of demo is to show a process steps (in Windows OS):
+## Purpose
+Purpose of demo is to show an automated process steps (in Windows OS):
 1. Scrape Sourceforge top 100 software links
 2. Filter Windows PE files and download in current dir
 3. Rename files after SHA-1 hashes
 4. Compress files with 7-Zip (via GUI automation)
 
-* Run command for demo: ```python ./main.py```  
 
-## 3. Potential demo improvement list
+## 0. Dependencies
+* Windows OS
+* 7-Zip installed in default directory
+* Python3 (developed w/ version 3.10.2, other versions not tested)
+
+## 1. Setup & execute
+1. Install: 
+```
+python3 -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+pip install sourceforge-scraper/
+```
+2. Run command for demo: ```python ./demo.py```  
+
+## 2. Potential demo improvement list
 * Optimize/refactor process
 * Improve 7-Zip GUI handling, application cleanup/close down
 * Exception handling

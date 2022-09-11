@@ -4,7 +4,7 @@
 + 3. Rename files after SHA-1 hashes
 + 4. Compress 7z/WinRAR files (via GUI automation)
 """
-import SFScraper.sf as sforge
+from sourceforge import SFScraper
 from datetime import datetime
 import os
 from os import listdir
@@ -15,6 +15,24 @@ import psutil
 from pywinauto.application import Application
 from pywinauto import keyboard
 import time
+
+
+def main():
+    save_dir, timestamp = createTempFolder()
+    sf = SFScraper()
+    urls = getProjectLinks(sf, 5)
+
+    print("Filtering Windows PE32 executables from projects...")
+    dowloadReleases(sf, urls, "PE32 executable", save_dir)
+    
+    print("Renaming files to SHA-1...")
+    renameFilesToSHA1(save_dir)
+            
+    print("Archiving files...")
+    app = connectArchiverApp()
+    addDirToArchive(app, save_dir)
+    print("Done!")
+
 
 def _getTimestamp():
     timestamp = str(datetime.now())
@@ -100,17 +118,4 @@ def addDirToArchive(app, save_dir):
     
 
 if __name__ == "__main__":
-    save_dir, timestamp = createTempFolder()
-    sf = sforge.SFScraper()
-    urls = getProjectLinks(sf, 5)
-
-    print("Filtering Windows PE32 executables from projects...")
-    dowloadReleases(sf, urls, "PE32 executable", save_dir)
-    
-    print("Renaming files to SHA-1...")
-    renameFilesToSHA1(save_dir)
-            
-    print("Archiving files...")
-    app = connectArchiverApp()
-    addDirToArchive(app, save_dir)
-    print("Done!")
+    main()
