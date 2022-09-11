@@ -16,6 +16,7 @@ Purpose of demo is to show an automated process steps (in Windows OS):
 ## 1. Setup & execute
 1. Install: 
 ```
+git submodule update --init --recursive
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 pip install sourceforge-scraper/
