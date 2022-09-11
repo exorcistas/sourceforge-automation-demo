@@ -1,0 +1,3 @@
+[submodule "sourceforge-scraper"]
+	path = sourceforge-scraper
+	url = git@github.com:exorcistas/sourceforge-scraper.git
