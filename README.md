@@ -14,8 +14,9 @@ Purpose of demo is to show an automated process steps (in Windows OS):
 * Python3 (developed w/ version 3.10.2, other versions not tested)
 
 ## 1. Setup & execute
-0. Pull dependencies
+0. Pull dependencies (from private repo):
 ```git submodule update --init --recursive```
+* In case updated branch required: ```git submodule update --remote --merge```
 
 1. Install: 
 ```

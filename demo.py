@@ -1,9 +1,3 @@
-"""
-+ 1. Scrape Sourceforge top 100 software links
-+ 2. Filter Windows PE files and download
-+ 3. Rename files after SHA-1 hashes
-+ 4. Compress 7z/WinRAR files (via GUI automation)
-"""
 from sourceforge import SFScraper
 from datetime import datetime
 import os
@@ -18,46 +12,55 @@ import time
 
 
 def main():
-    save_dir, timestamp = createTempFolder()
+    """
+    + 1. Scrape Sourceforge top 100 software links
+    + 2. Filter Windows PE files and download
+    + 3. Rename files after SHA-1 hashes
+    + 4. Compress 7z/WinRAR files (via GUI automation)
+    """
+    if os.name != 'nt':
+        raise EnvironmentError(f"Process cannot be run on {os.name}")
+
+    save_dir, timestamp = create_temp_folder()
     sf = SFScraper()
-    urls = getProjectLinks(sf, 5)
+    urls = get_project_links(sf, 5)
 
     print("Filtering Windows PE32 executables from projects...")
-    dowloadReleases(sf, urls, "PE32 executable", save_dir)
+    dowload_releases(sf, urls, "PE32 executable", save_dir)
     
     print("Renaming files to SHA-1...")
-    renameFilesToSHA1(save_dir)
+    rename_files_to_sha1(save_dir)
             
     print("Archiving files...")
-    app = connectArchiverApp()
-    addDirToArchive(app, save_dir)
+    app = connect_archiver_app()
+    add_dir_to_archive(app, save_dir)
     print("Done!")
 
 
-def _getTimestamp():
+def _get_timestamp() -> str:
     timestamp = str(datetime.now())
     timestamp = (timestamp.replace(':', '').replace('-', '').replace('.', '').replace(' ', ''))
     return timestamp
 
-def createTempFolder():
-    timestamp = _getTimestamp()
+def create_temp_folder() -> tuple(str, str):
+    timestamp = _get_timestamp()
     save_dir = os.path.join(os.getcwd(), timestamp)
     os.mkdir(save_dir)
     return save_dir, timestamp
 
-def getProjectLinks(sf, max_pages):
+def get_project_links(sf: SFScraper, max_pages: int = 1) -> list:
     urls = []
     for pagenum in range(1, max_pages): # each page shows 25 projects
-        urls += sf.getPopularProjectsByPage(pagenum)
+        urls += sf.get_popular_project_urls(pagenum)
     if not urls:
         raise("No project links found!")
     
     print(f"Found top {len(urls)} projects in SourceForge")
     return urls
 
-def dowloadReleases(sf, urls, file_type, dir):
+def dowload_releases(sf: SFScraper, urls: list, file_type: str, dir: str) -> None:
     for url in urls:
-        rel = sf.getProjectBestReleases(url)
+        rel = sf.get_project_release_info(url)
         try:
             if (rel['platform_releases']['windows']['file_type'] == file_type):
                 download_url = rel['platform_releases']['windows']['url']
@@ -69,14 +72,14 @@ def dowloadReleases(sf, urls, file_type, dir):
         except:
                 print(f"[EXCEPTION] Releases not found in: {url}")
 
-def renameFilesToSHA1(dir):
+def rename_files_to_sha1(dir: str) -> None:
     files = [f for f in listdir(dir) if isfile(join(dir, f))]
     for file in files:
         file_path = os.path.join(dir, file)
-        file_sha1 = _getFileSHA1(file_path)
+        file_sha1 = _get_file_sha1(file_path)
         os.rename(file_path, os.path.join(dir, file_sha1))
 
-def _getFileSHA1(filename):
+def _get_file_sha1(filename: str)-> str:
    h = hashlib.sha1()
    with open(filename,'rb') as file:    # open file for reading in binary mode
        chunk = 0
@@ -85,7 +88,7 @@ def _getFileSHA1(filename):
            h.update(chunk)
    return h.hexdigest()                 # return the hex representation of digest
 
-def connectArchiverApp():
+def connect_archiver_app() -> Application:
     process = [proc for proc in psutil.process_iter() if proc.name() == "7zFM.exe"]
     if process:
         app = Application().connect(process=process[0].pid)
@@ -93,7 +96,7 @@ def connectArchiverApp():
         app = Application().start('C:\\Program Files\\7-Zip\\7zFM.exe', timeout=3)
     return app
 
-def addDirToArchive(app, save_dir):
+def add_dir_to_archive(app, save_dir: str) -> None:
     main_window = app.top_window()
     main_window['Edit'].click()
     main_window['Edit'].type_keys('{DEL}')
