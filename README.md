@@ -14,9 +14,11 @@ Purpose of demo is to show an automated process steps (in Windows OS):
 * Python3 (developed w/ version 3.10.2, other versions not tested)
 
 ## 1. Setup & execute
+0. Pull dependencies
+```git submodule update --init --recursive```
+
 1. Install: 
 ```
-git submodule update --init --recursive
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 pip install sourceforge-scraper/

@@ -5,6 +5,7 @@ with open("README.md", "r") as doc:
     long_description = doc.read()
 
 requirements = open("requirements.txt").read().split('\n')
+#requirements.append('git+https://github.com/exorcistas/sourceforge-scraper.git#egg=sourceforge')
 
 
 setup(
